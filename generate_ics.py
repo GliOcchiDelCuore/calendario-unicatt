@@ -1,15 +1,35 @@
 import datetime
 import requests
 
-# Incolla qui il link completo copiato dalla scheda Network (deve iniziare con https://)
+# URL dell'API Unicatt
 API_URL = "https://secure.unicatt.it/didatticaweb2/ps/lezioni/"
+
+# Parametri del tuo corso (Medicine and Surgery, 3° Anno)
+PAYLOAD = {
+    "anno": 2026,
+    "tipo": "CDL",
+    "codFacolta": "75012",
+    "codCdl": "0H0B",
+    "annoDiCorso": 3,
+}
 
 
 def main():
     headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
     }
-    res = requests.get(API_URL, headers=headers)
+
+    # Inviamo una richiesta POST inviando i parametri in JSON
+    res = requests.post(API_URL, json=PAYLOAD, headers=headers)
+
+    # Se POST fallisce con 405, tentiamo la richiesta in formato Form Data
+    if res.status_code == 405:
+        res = requests.post(API_URL, data=PAYLOAD, headers=headers)
+
+    res.raise_for_status()
+
     data = res.json().get("lezioniCalendario", {})
 
     ics = [
