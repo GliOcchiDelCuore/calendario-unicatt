@@ -1,21 +1,36 @@
+
 name: Aggiorna Calendario
+
 on:
   schedule:
     - cron: '0 5 * * *'
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Scarica repository
+        uses: actions/checkout@v4
+
+      - name: Configura Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install requests
-      - run: python generate_ics.py
-      - uses: peaceiris/actions-gh-pages@v3
+
+      - name: Installa dipendenze
+        run: pip install requests
+
+      - name: Genera calendario ICS
+        run: python generate_ics.py
+
+      - name: Pubblica calendario
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+          publish_dir: ./public
+          publish_branch: gh-pages
