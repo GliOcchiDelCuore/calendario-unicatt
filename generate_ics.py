@@ -17,7 +17,11 @@ PAYLOAD = {
     "codiceCorsoDiLaurea": "0H0B",
     "annoDiCorso": "3",
 }
-
+# Insegnamenti da escludere
+ESCLUSIONI = [
+    "FIRST AID AND NURSING PRACTICE PROFESSIONAL TRAINING",
+    "EMERGING TECHNOLOGIES IN MEDICINE",
+]
 ROME = ZoneInfo("Europe/Rome")
 UTC = datetime.timezone.utc
 
@@ -120,6 +124,8 @@ def main():
             end = utc_ics(date_str, lesson["oraFine"])
 
             materia = lesson.get("descrizioneInsegnamento") or "Lezione"
+            if materia.strip().upper() in ESCLUSIONI:
+                continue
             aula = lesson.get("descrizioneAula") or ""
             edificio = lesson.get("descrizioneEdificio") or ""
             docente = lesson.get("docente") or ""
